@@ -1,0 +1,453 @@
+
+<h2 class="sr-only">Student Survey Power BI Dashboard — 8 interactive visualizations covering tabular, matrix, funnel, pie, scatter, sand dance, dashboard, and Q&A views</h2>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:12px 0 16px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:16px}
+.nav button{padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:13px;transition:all .15s}
+.nav button.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.nav button:hover:not(.active){background:var(--color-background-secondary)}
+.page{display:none}.page.active{display:block}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px}
+.metric .label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
+.metric .val{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:16px}
+.card-title{font-size:14px;font-weight:500;color:var(--color-text-secondary);margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px;font-size:11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ch-wrap{position:relative;width:100%}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.tbl th{text-align:left;padding:8px 10px;background:var(--color-background-secondary);color:var(--color-text-secondary);font-weight:500;font-size:11px;border-bottom:0.5px solid var(--color-border-tertiary)}
+table.tbl td{padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+table.tbl tr:last-child td{border-bottom:none}
+.tap-red{background:#FCEBEB;color:#A32D2D}
+.tap-yellow{background:#FAEEDA;color:#854F0B}
+.tap-blue{background:#E6F1FB;color:#185FA5}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:12px;color:var(--color-text-secondary)}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend .dot{width:10px;height:10px;border-radius:2px;display:inline-block}
+.sec-title{font-size:13px;font-weight:500;margin-bottom:8px;color:var(--color-text-primary)}
+.qa-input{display:flex;gap:8px;margin-bottom:16px}
+.qa-input input{flex:1;padding:8px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px}
+.qa-result{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:16px;min-height:80px}
+.qa-chip{display:inline-block;padding:5px 12px;margin:4px;border:0.5px solid var(--color-border-secondary);border-radius:20px;font-size:12px;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary)}
+.qa-chip:hover{background:var(--color-background-secondary)}
+.rls-user{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.rls-user button{padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:13px}
+.rls-user button.sel{background:var(--color-background-success);color:var(--color-text-success);border-color:var(--color-border-success)}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+</style>
+
+<div class="nav" id="nav">
+  <button class="active" onclick="showPage('p1')"><i class="ti ti-table" aria-hidden="true"></i> Tabular</button>
+  <button onclick="showPage('p2')"><i class="ti ti-layout-grid" aria-hidden="true"></i> Matrix</button>
+  <button onclick="showPage('p3')"><i class="ti ti-filter" aria-hidden="true"></i> Funnel</button>
+  <button onclick="showPage('p4')"><i class="ti ti-chart-pie" aria-hidden="true"></i> Pie Chart</button>
+  <button onclick="showPage('p5')"><i class="ti ti-chart-dots" aria-hidden="true"></i> Scatter</button>
+  <button onclick="showPage('p6')"><i class="ti ti-chart-area" aria-hidden="true"></i> Sand Dance</button>
+  <button onclick="showPage('p7')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard</button>
+  <button onclick="showPage('p8')"><i class="ti ti-message-question" aria-hidden="true"></i> Q&A</button>
+</div>
+
+<div id="p1" class="page active">
+  <div class="metrics" id="kpi1"></div>
+  <div class="card">
+    <div class="card-title">Tabular visualization — total amount of purchase by store location & setting</div>
+    <div class="legend">
+      <span><span class="dot" style="background:#FCEBEB;border:1px solid #A32D2D"></span>Red: TAP 0–35K</span>
+      <span><span class="dot" style="background:#FAEEDA;border:1px solid #854F0B"></span>Yellow: TAP 35K–60K</span>
+      <span><span class="dot" style="background:#E6F1FB;border:1px solid #185FA5"></span>Blue: TAP ≥60K</span>
+    </div>
+    <div style="overflow-x:auto"><table class="tbl" id="tbl1"></table></div>
+  </div>
+</div>
+
+<div id="p2" class="page">
+  <div class="card">
+    <div class="card-title">Matrix — outdoor sports spend by age group & store setting</div>
+    <div style="overflow-x:auto"><table class="tbl" id="matrix1"></table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Color scale: outdoor sports total spend</div>
+    <div class="ch-wrap" style="height:220px"><canvas id="matrixChart" role="img" aria-label="Bar chart of outdoor sports spend by store setting">Outdoor sports spend by store setting</canvas></div>
+  </div>
+</div>
+
+<div id="p3" class="page">
+  <div class="card">
+    <div class="card-title">Funnel chart — total amount of purchase by store setting (% of first)</div>
+    <div class="ch-wrap" style="height:280px"><canvas id="funnelChart" role="img" aria-label="Horizontal bar funnel chart showing TAP by store setting">TAP by store setting funnel</canvas></div>
+  </div>
+</div>
+
+<div id="p4" class="page">
+  <div class="card">
+    <div class="card-title">Pie chart — total purchase by store location (Suburban stores only)</div>
+    <div class="legend" id="pieLegend"></div>
+    <div class="ch-wrap" style="height:280px"><canvas id="pieChart" role="img" aria-label="Pie chart of purchases by store location for suburban stores only">Suburban store purchases by location</canvas></div>
+  </div>
+</div>
+
+<div id="p5" class="page">
+  <div class="card">
+    <div class="card-title">Scatter plot — video games vs outdoor sports spend by age</div>
+    <div class="ch-wrap" style="height:320px"><canvas id="scatterChart" role="img" aria-label="Scatter plot of video games purchase vs outdoor sports spend across different ages">Video games vs outdoor sports by age</canvas></div>
+  </div>
+</div>
+
+<div id="p6" class="page">
+  <div class="card">
+    <div class="card-title">Sand dance plot — indoor sports & video games by age group</div>
+    <div class="ch-wrap" style="height:320px"><canvas id="sandChart" role="img" aria-label="Grouped bar chart showing indoor sports and video games spend across age groups">Indoor sports and video games by age group</canvas></div>
+  </div>
+</div>
+
+<div id="p7" class="page">
+  <div class="metrics" id="kpi7"></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Funnel — TAP by store setting</div>
+      <div class="ch-wrap" style="height:200px"><canvas id="dash_funnel" role="img" aria-label="Funnel chart TAP by store setting">TAP by store setting</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Scatter — video games vs outdoor sports</div>
+      <div class="ch-wrap" style="height:200px"><canvas id="dash_scatter" role="img" aria-label="Scatter chart video games vs outdoor sports">Scatter chart</canvas></div>
+    </div>
+  </div>
+  <div class="card" style="background:var(--color-background-secondary);border:0.5px dashed var(--color-border-secondary)">
+    <div class="card-title">Schedule refresh</div>
+    <p style="font-size:13px;color:var(--color-text-secondary)"><i class="ti ti-refresh" aria-hidden="true"></i> Configured: 6× per day (every 4 hours). Next refresh: <strong style="color:var(--color-text-primary)" id="nextRefresh"></strong></p>
+  </div>
+</div>
+
+<div id="p8" class="page">
+  <div class="card">
+    <div class="card-title">Q&A — ask a question about the data</div>
+    <div class="qa-input">
+      <input type="text" id="qaInput" placeholder="e.g. what is the average age of students?" />
+      <button onclick="runQA()">Ask</button>
+    </div>
+    <div style="margin-bottom:10px;font-size:12px;color:var(--color-text-secondary)">Try:</div>
+    <div>
+      <span class="qa-chip" onclick="setQA('average age of students')">Average age</span>
+      <span class="qa-chip" onclick="setQA('total purchases by store location')">Total by location</span>
+      <span class="qa-chip" onclick="setQA('top store location by video games')">Top video games location</span>
+      <span class="qa-chip" onclick="setQA('total outdoor sports by store setting')">Outdoor by setting</span>
+      <span class="qa-chip" onclick="setQA('count of students by age')">Count by age</span>
+    </div>
+    <div class="qa-result" id="qaResult" style="margin-top:14px"></div>
+    <div class="ch-wrap" style="height:240px;margin-top:14px;display:none" id="qaChartWrap"><canvas id="qaChart" role="img" aria-label="Q&A result chart">Q&A chart</canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Row-level security (RLS) — user data access</div>
+    <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:10px">View data as user:</div>
+    <div class="rls-user" id="rlsButtons"></div>
+    <div id="rlsTable" style="overflow-x:auto;margin-top:10px"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const RAW=[{"sl":"Los Angeles","ss":"Rural","age":11,"vg":534.87,"ab":27.68,"toys":203.01,"os":5.18,"is_":111.11,"gad":233.08,"nab":63.01,"tap":1177.94},{"sl":"Seattle","ss":"Rural","age":10,"vg":134.42,"ab":106.45,"toys":358.77,"os":19.32,"is_":17.68,"gad":187.25,"nab":11.49,"tap":835.38},{"sl":"Boston","ss":"Urban","age":21,"vg":121.6,"ab":77.12,"toys":10.91,"os":9.85,"is_":26.94,"gad":76.52,"nab":86.74,"tap":409.68},{"sl":"Boston","ss":"Suburb","age":15,"vg":277.2,"ab":35.94,"toys":15.69,"os":5.56,"is_":13.47,"gad":226.52,"nab":19.32,"tap":593.7},{"sl":"New York","ss":"Rural","age":12,"vg":908.12,"ab":291.47,"toys":17.77,"os":34.85,"is_":148.15,"gad":145.33,"nab":58.96,"tap":1604.65},{"sl":"Los Angeles","ss":"Urban","age":9,"vg":28.23,"ab":92.19,"toys":44.11,"os":7.22,"is_":88.45,"gad":63.14,"nab":31.55,"tap":354.89},{"sl":"Seattle","ss":"Suburb","age":16,"vg":456.33,"ab":18.77,"toys":23.11,"os":45.67,"is_":34.22,"gad":312.44,"nab":22.11,"tap":912.65},{"sl":"New York","ss":"Urban","age":14,"vg":211.44,"ab":55.33,"toys":67.88,"os":12.44,"is_":44.77,"gad":188.22,"nab":38.55,"tap":618.63},{"sl":"Boston","ss":"Rural","age":8,"vg":88.11,"ab":34.22,"toys":122.33,"os":8.44,"is_":22.33,"gad":55.77,"nab":15.22,"tap":346.42},{"sl":"Los Angeles","ss":"Suburb","age":18,"vg":667.22,"ab":44.11,"toys":31.55,"os":67.88,"is_":55.44,"gad":433.11,"nab":29.33,"tap":1328.64},{"sl":"Seattle","ss":"Urban","age":13,"vg":177.44,"ab":66.22,"toys":88.33,"os":22.11,"is_":55.88,"gad":144.55,"nab":44.22,"tap":598.75},{"sl":"New York","ss":"Suburb","age":17,"vg":533.77,"ab":22.44,"toys":44.22,"os":55.33,"is_":33.11,"gad":355.44,"nab":18.77,"tap":1063.08},{"sl":"Boston","ss":"Urban","age":22,"vg":155.33,"ab":88.55,"toys":22.11,"os":11.22,"is_":33.44,"gad":122.11,"nab":77.33,"tap":510.09},{"sl":"Los Angeles","ss":"Rural","age":9,"vg":412.55,"ab":33.22,"toys":188.44,"os":9.33,"is_":88.22,"gad":188.44,"nab":44.11,"tap":964.31},{"sl":"Seattle","ss":"Suburb","age":14,"vg":344.22,"ab":22.11,"toys":33.44,"os":38.55,"is_":27.33,"gad":244.11,"nab":16.44,"tap":726.2},{"sl":"New York","ss":"Urban","age":11,"vg":198.44,"ab":44.33,"toys":55.22,"os":8.77,"is_":38.11,"gad":166.33,"nab":28.44,"tap":539.64},{"sl":"Boston","ss":"Suburb","age":16,"vg":388.44,"ab":27.33,"toys":19.11,"os":42.22,"is_":19.33,"gad":277.22,"nab":22.11,"tap":795.76},{"sl":"Los Angeles","ss":"Urban","age":20,"vg":99.33,"ab":111.22,"toys":33.44,"os":14.55,"is_":66.22,"gad":88.11,"nab":55.44,"tap":468.31},{"sl":"Seattle","ss":"Rural","age":7,"vg":55.22,"ab":22.11,"toys":188.33,"os":5.44,"is_":11.22,"gad":44.33,"nab":7.11,"tap":333.76},{"sl":"New York","ss":"Rural","age":15,"vg":722.11,"ab":166.44,"toys":22.33,"os":28.11,"is_":111.22,"gad":122.44,"nab":44.22,"tap":1216.87},{"sl":"Boston","ss":"Urban","age":19,"vg":133.22,"ab":66.33,"toys":18.44,"os":9.11,"is_":28.33,"gad":99.44,"nab":66.22,"tap":421.09},{"sl":"Los Angeles","ss":"Suburb","age":13,"vg":499.11,"ab":33.22,"toys":28.44,"os":52.33,"is_":44.22,"gad":366.44,"nab":22.11,"tap":1045.87},{"sl":"Seattle","ss":"Urban","age":18,"vg":222.33,"ab":77.44,"toys":66.22,"os":28.33,"is_":66.44,"gad":177.22,"nab":55.11,"tap":693.09},{"sl":"New York","ss":"Suburb","age":12,"vg":411.44,"ab":18.33,"toys":38.11,"os":44.22,"is_":27.44,"gad":288.33,"nab":14.22,"tap":842.09},{"sl":"Boston","ss":"Rural","age":10,"vg":77.33,"ab":28.44,"toys":144.22,"os":6.55,"is_":18.33,"gad":66.22,"nab":11.33,"tap":352.42},{"sl":"Los Angeles","ss":"Urban","age":16,"vg":177.22,"ab":88.33,"toys":44.11,"os":18.44,"is_":77.33,"gad":144.44,"nab":66.22,"tap":616.09},{"sl":"Seattle","ss":"Rural","age":11,"vg":299.44,"ab":55.22,"toys":122.33,"os":11.44,"is_":44.22,"gad":166.33,"nab":22.11,"tap":721.09},{"sl":"New York","ss":"Urban","age":20,"vg":244.33,"ab":55.44,"toys":44.22,"os":15.33,"is_":44.22,"gad":199.11,"nab":44.33,"tap":647.98},{"sl":"Boston","ss":"Suburb","age":14,"vg":322.11,"ab":22.44,"toys":22.33,"os":34.55,"is_":16.22,"gad":233.44,"nab":17.33,"tap":668.42},{"sl":"Los Angeles","ss":"Rural","age":13,"vg":566.22,"ab":44.33,"toys":166.55,"os":12.22,"is_":99.33,"gad":244.11,"nab":33.44,"tap":1166.2}];
+
+const LOCS=["Los Angeles","Seattle","Boston","New York"];
+const SETTINGS=["Rural","Urban","Suburb"];
+const COLORS_LOC=["#378ADD","#1D9E75","#D85A30","#9F77DD"];
+const COLORS_SS=["#D85A30","#378ADD","#1D9E75"];
+
+function groupBy(data,keys){
+  const r={};
+  data.forEach(d=>{
+    const k=keys.map(k2=>d[k2]).join('||');
+    if(!r[k])r[k]={keys:keys.reduce((o,k2)=>{o[k2]=d[k2];return o},{}),rows:[]};
+    r[k].rows.push(d);
+  });
+  return r;
+}
+function sum(arr,f){return arr.reduce((a,b)=>a+(f?f(b):b),0)}
+function avg(arr,f){return sum(arr,f)/arr.length}
+
+function tapColor(v){
+  if(v<35000)return'tap-red';
+  if(v<60000)return'tap-yellow';
+  return'tap-blue';
+}
+
+function buildKPI(el,data){
+  const total=sum(data,d=>d.tap);
+  const avgAge=avg(data,d=>d.age);
+  const avgTap=avg(data,d=>d.tap);
+  el.innerHTML=`
+    <div class="metric"><div class="label">Total records</div><div class="val">${data.length}</div></div>
+    <div class="metric"><div class="label">Total purchases ($)</div><div class="val">$${Math.round(total).toLocaleString()}</div></div>
+    <div class="metric"><div class="label">Avg purchase ($)</div><div class="val">$${Math.round(avgTap).toLocaleString()}</div></div>
+    <div class="metric"><div class="label">Avg age</div><div class="val">${avgAge.toFixed(1)} yrs</div></div>
+  `;
+}
+
+buildKPI(document.getElementById('kpi1'),RAW);
+
+function buildTable1(){
+  const grp=groupBy(RAW,['sl','ss']);
+  const rows=LOCS.flatMap(sl=>SETTINGS.map(ss=>{
+    const key=sl+'||'+ss;
+    const rows2=grp[key]?grp[key].rows:[];
+    if(!rows2.length)return null;
+    const tap=sum(rows2,d=>d.tap);
+    return{sl,ss,count:rows2.length,tap};
+  }).filter(Boolean));
+
+  let html='<thead><tr><th>Store location</th><th>Store setting</th><th>Records</th><th>Total purchases ($)</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const cls=tapColor(r.tap);
+    html+=`<tr><td>${r.sl}</td><td>${r.ss}</td><td>${r.count}</td><td class="badge ${cls}">$${Math.round(r.tap).toLocaleString()}</td></tr>`;
+  });
+  html+='</tbody>';
+  document.getElementById('tbl1').innerHTML=html;
+}
+buildTable1();
+
+function buildMatrix(){
+  const ages=RAW.map(d=>d.age);
+  const minA=Math.min(...ages),maxA=Math.max(...ages);
+  const bands=[[7,10,'7–10'],[11,13,'11–13'],[14,16,'14–16'],[17,19,'17–19'],[20,22,'20–22']];
+
+  let html='<thead><tr><th>Age group</th>'+SETTINGS.map(s=>`<th>${s}</th>`).join('')+'<th>Total</th></tr></thead><tbody>';
+  bands.forEach(([lo,hi,lab])=>{
+    html+=`<tr><td>${lab}</td>`;
+    let rowTotal=0;
+    SETTINGS.forEach(ss=>{
+      const rows=RAW.filter(d=>d.age>=lo&&d.age<=hi&&d.ss===ss);
+      const v=sum(rows,d=>d.os);
+      rowTotal+=v;
+      const pct=Math.min(100,v/120*100);
+      const bg=`rgba(29,158,117,${(pct/100*0.6+0.1).toFixed(2)})`;
+      html+=`<td style="background:${bg};color:var(--color-text-primary)">$${v?Math.round(v).toLocaleString():'—'}</td>`;
+    });
+    html+=`<td style="font-weight:500">$${Math.round(rowTotal).toLocaleString()}</td></tr>`;
+  });
+  html+='</tbody>';
+  document.getElementById('matrix1').innerHTML=html;
+
+  const matData=SETTINGS.map(ss=>sum(RAW.filter(d=>d.ss===ss),d=>d.os));
+  new Chart(document.getElementById('matrixChart'),{
+    type:'bar',
+    data:{labels:SETTINGS,datasets:[{label:'Outdoor sports ($)',data:matData,backgroundColor:COLORS_SS,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+Math.round(v).toLocaleString()}}}}
+  });
+}
+buildMatrix();
+
+function buildFunnel(canvasId){
+  const totals=SETTINGS.map(ss=>({ss,v:sum(RAW.filter(d=>d.ss===ss),d=>d.tap)}));
+  totals.sort((a,b)=>b.v-a.v);
+  const first=totals[0].v;
+  const labels=totals.map(t=>t.ss);
+  const vals=totals.map(t=>t.v);
+  const pcts=totals.map(t=>+(t.v/first*100).toFixed(1));
+
+  new Chart(document.getElementById(canvasId),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'TAP ($)',
+        data:vals,
+        backgroundColor:COLORS_SS,
+        borderRadius:4,
+        barPercentage:0.7
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`$${Math.round(ctx.raw).toLocaleString()} (${pcts[ctx.dataIndex]}% of first)`}}
+      },
+      scales:{x:{ticks:{callback:v=>'$'+Math.round(v/1000)+'K'}}}
+    }
+  });
+}
+buildFunnel('funnelChart');
+buildFunnel('dash_funnel');
+
+function buildPie(){
+  const subData=RAW.filter(d=>d.ss==='Suburb');
+  const byLoc=LOCS.map(l=>({l,v:sum(subData.filter(d=>d.sl===l),d=>d.tap)})).filter(x=>x.v>0);
+  const total=sum(byLoc,x=>x.v);
+  const labels=byLoc.map(x=>x.l);
+  const vals=byLoc.map(x=>x.v);
+  const pcts=byLoc.map(x=>+(x.v/total*100).toFixed(1));
+
+  const legEl=document.getElementById('pieLegend');
+  legEl.innerHTML=byLoc.map((x,i)=>`<span><span class="dot" style="background:${COLORS_LOC[LOCS.indexOf(x.l)]}"></span>${x.l} ${pcts[i]}%</span>`).join('');
+
+  new Chart(document.getElementById('pieChart'),{
+    type:'pie',
+    data:{labels,datasets:[{data:vals,backgroundColor:byLoc.map(x=>COLORS_LOC[LOCS.indexOf(x.l)]),borderWidth:1,borderColor:'#fff'}]},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`${ctx.label}: $${Math.round(ctx.raw).toLocaleString()} (${pcts[ctx.dataIndex]}%)`}}
+      }
+    }
+  });
+}
+buildPie();
+
+function buildScatter(canvasId,h){
+  const pts=RAW.map(d=>({x:d.vg,y:d.os,age:d.age,r:5}));
+  new Chart(document.getElementById(canvasId),{
+    type:'bubble',
+    data:{datasets:[{
+      label:'Students',
+      data:pts,
+      backgroundColor:pts.map(p=>`rgba(55,138,221,${Math.min(0.9,(p.age-7)/15*0.6+0.3)})`),
+      borderColor:'rgba(55,138,221,0.8)',
+      borderWidth:1
+    }]},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`Age ${ctx.raw.age} | VG: $${Math.round(ctx.raw.x)} | OS: $${Math.round(ctx.raw.y)}`}}
+      },
+      scales:{
+        x:{title:{display:true,text:'Video games spend ($)'},ticks:{callback:v=>'$'+Math.round(v)}},
+        y:{title:{display:true,text:'Outdoor sports spend ($)'},ticks:{callback:v=>'$'+Math.round(v)}}
+      }
+    }
+  });
+}
+buildScatter('scatterChart');
+buildScatter('dash_scatter');
+
+function buildSand(){
+  const bands=[[7,10,'7–10'],[11,13,'11–13'],[14,16,'14–16'],[17,19,'17–19'],[20,22,'20–22']];
+  const labels=bands.map(b=>b[2]);
+  const vgData=bands.map(([lo,hi])=>Math.round(avg(RAW.filter(d=>d.age>=lo&&d.age<=hi),d=>d.vg)));
+  const isData=bands.map(([lo,hi])=>Math.round(avg(RAW.filter(d=>d.age>=lo&&d.age<=hi),d=>d.is_)));
+
+  new Chart(document.getElementById('sandChart'),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Video games',data:vgData,backgroundColor:'#378ADD',borderRadius:3},
+        {label:'Indoor sports',data:isData,backgroundColor:'#1D9E75',borderRadius:3}
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{title:{display:true,text:'Age group'}},
+        y:{title:{display:true,text:'Avg spend ($)'},ticks:{callback:v=>'$'+Math.round(v)}}
+      }
+    }
+  });
+}
+buildSand();
+
+function buildKPI7(){
+  buildKPI(document.getElementById('kpi7'),RAW);
+  const now=new Date();
+  const h=now.getHours();
+  const nextH=(Math.ceil(h/4)*4)%24;
+  document.getElementById('nextRefresh').textContent=`${String(nextH).padStart(2,'0')}:00`;
+}
+buildKPI7();
+
+const QA_ANSWERS={
+  'average age of students':()=>{const a=avg(RAW,d=>d.age).toFixed(1);return{text:`Average age of students: <strong>${a} years</strong>`,chart:null}},
+  'total purchases by store location':()=>{
+    const byLoc=LOCS.map(l=>({l,v:Math.round(sum(RAW.filter(d=>d.sl===l),d=>d.tap))}));
+    return{text:`Total purchases by store location:<br>${byLoc.map(x=>`${x.l}: <strong>$${x.v.toLocaleString()}</strong>`).join(' | ')}`,chart:{type:'bar',labels:byLoc.map(x=>x.l),data:byLoc.map(x=>x.v),colors:COLORS_LOC,xlabel:'Store location',ylabel:'TAP ($)'}};
+  },
+  'top store location by video games':()=>{
+    const byLoc=LOCS.map(l=>({l,v:sum(RAW.filter(d=>d.sl===l),d=>d.vg)}));
+    byLoc.sort((a,b)=>b.v-a.v);
+    return{text:`Top location by video games: <strong>${byLoc[0].l}</strong> ($${Math.round(byLoc[0].v).toLocaleString()})`,chart:{type:'bar',labels:byLoc.map(x=>x.l),data:byLoc.map(x=>Math.round(x.v)),colors:COLORS_LOC,xlabel:'Store location',ylabel:'Video games ($)'}};
+  },
+  'total outdoor sports by store setting':()=>{
+    const bySS=SETTINGS.map(ss=>({ss,v:Math.round(sum(RAW.filter(d=>d.ss===ss),d=>d.os))}));
+    return{text:`Outdoor sports spend: ${bySS.map(x=>`${x.ss}: <strong>$${x.v.toLocaleString()}</strong>`).join(' | ')}`,chart:{type:'bar',labels:bySS.map(x=>x.ss),data:bySS.map(x=>x.v),colors:COLORS_SS,xlabel:'Store setting',ylabel:'Outdoor sports ($)'}};
+  },
+  'count of students by age':()=>{
+    const ages=[...new Set(RAW.map(d=>d.age))].sort((a,b)=>a-b);
+    const counts=ages.map(a=>RAW.filter(d=>d.age===a).length);
+    return{text:`Count of students by age (showing distribution).`,chart:{type:'bar',labels:ages.map(String),data:counts,colors:ages.map((_,i)=>COLORS_LOC[i%4]),xlabel:'Age',ylabel:'Count'}};
+  }
+};
+
+let qaChartInst=null;
+function runQA(){
+  const q=document.getElementById('qaInput').value.trim().toLowerCase();
+  const res=QA_ANSWERS[q]||(()=>({text:`No exact match found for "<em>${q}</em>". Try one of the suggestions above.`,chart:null}))();
+  const r=res();
+  document.getElementById('qaResult').innerHTML=r.text;
+  const wrap=document.getElementById('qaChartWrap');
+  if(r.chart){
+    wrap.style.display='block';
+    if(qaChartInst)qaChartInst.destroy();
+    qaChartInst=new Chart(document.getElementById('qaChart'),{
+      type:r.chart.type,
+      data:{labels:r.chart.labels,datasets:[{data:r.chart.data,backgroundColor:r.chart.colors,borderRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:r.chart.xlabel}},y:{ticks:{callback:v=>'$'+Math.round(v).toLocaleString()}}}}
+    });
+  } else {
+    wrap.style.display='none';
+    if(qaChartInst){qaChartInst.destroy();qaChartInst=null;}
+  }
+}
+function setQA(q){document.getElementById('qaInput').value=q;runQA();}
+document.getElementById('qaInput').addEventListener('keydown',e=>{if(e.key==='Enter')runQA();});
+
+const USER_MAPPINGS=[{user:'Nani',settings:['Urban','Suburb']},{user:'Mani',settings:['Rural']}];
+const rlsEl=document.getElementById('rlsButtons');
+USER_MAPPINGS.forEach((u,i)=>{
+  const b=document.createElement('button');
+  b.textContent=u.user+' ('+u.settings.join(', ')+')';
+  b.onclick=()=>{
+    rlsEl.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel');
+    showRLS(u);
+  };
+  if(i===0){b.classList.add('sel');}
+  rlsEl.appendChild(b);
+});
+
+function showRLS(u){
+  const filtered=RAW.filter(d=>u.settings.includes(d.ss));
+  const total=Math.round(sum(filtered,d=>d.tap));
+  const byLoc=LOCS.map(l=>({l,v:Math.round(sum(filtered.filter(d=>d.sl===l),d=>d.tap))})).filter(x=>x.v>0);
+  let html=`<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px"><strong>${u.user}</strong> can view: <strong>${u.settings.join(', ')}</strong> stores only. ${filtered.length} records | Total: $${total.toLocaleString()}</p>`;
+  html+='<table class="tbl"><thead><tr><th>Store location</th><th>Store setting</th><th>Total TAP ($)</th></tr></thead><tbody>';
+  byLoc.forEach(x=>{
+    u.settings.forEach(ss=>{
+      const rows=filtered.filter(d=>d.sl===x.l&&d.ss===ss);
+      if(rows.length){
+        html+=`<tr><td>${x.l}</td><td>${ss}</td><td>$${Math.round(sum(rows,d=>d.tap)).toLocaleString()}</td></tr>`;
+      }
+    });
+  });
+  html+='</tbody></table>';
+  document.getElementById('rlsTable').innerHTML=html;
+}
+showRLS(USER_MAPPINGS[0]);
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav button').forEach((b,i)=>{
+    b.classList.toggle('active',b.getAttribute('onclick')===`showPage('${id}')`);
+  });
+}
+</script>
